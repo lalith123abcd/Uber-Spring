@@ -4,7 +4,10 @@ import com.Uber.UberApp.dto.PassengerRequest;
 import com.Uber.UberApp.dto.PassengerResponse;
 import com.Uber.UberApp.mapper.PassengerMapper;
 import com.Uber.UberApp.model.Passenger;
+import com.Uber.UberApp.model.PassengerElasticDocument;
+import com.Uber.UberApp.repository.PassengerDocumentRepository;
 import com.Uber.UberApp.repository.PassengerRepository;
+import com.Uber.UberApp.service.IPassengerIndexService;
 import com.Uber.UberApp.service.PassengerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PassengerServiceImpl implements PassengerService {
     private final PassengerRepository passengerRepository;
+
+    private  final IPassengerIndexService passengerIndexService;
+    private final PassengerDocumentRepository passengerDocumentRepository;
     @Override
     @Transactional(readOnly = true)
     public Optional<PassengerResponse> findById(Long id) {
@@ -44,13 +50,23 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<PassengerElasticDocument> findByElasticSearch(String query) {
+
+        return passengerDocumentRepository.findByNameContainingOrEmailContaining(query,query);
+
+    }
+
+    @Override
     public PassengerResponse createPassenger(PassengerRequest passengerRequest) {
-        if(passengerRequest.existsByEmail(passengerRequest.getEmail())){
+        if(passengerRepository.existsByEmail(passengerRequest.getEmail())){
             throw  new IllegalArgumentException("Passenger with email "+passengerRequest.getEmail()+"already exists");
 
         }
         Passenger passenger= PassengerMapper.toEntity(passengerRequest);
         Passenger savedPassenger=passengerRepository.save(passenger);
+
+        passengerIndexService.createPassengerIndex(passenger);
         return PassengerMapper.toResponse(savedPassenger);
     }
 

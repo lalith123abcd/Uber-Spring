@@ -2,6 +2,7 @@ package com.Uber.UberApp.controller;
 
 import com.Uber.UberApp.dto.PassengerRequest;
 import com.Uber.UberApp.dto.PassengerResponse;
+import com.Uber.UberApp.model.PassengerElasticDocument;
 import com.Uber.UberApp.service.PassengerService;
 import com.Uber.UberApp.service.PassengerWriteService;
 import jakarta.validation.Valid;
@@ -76,9 +77,18 @@ public class PassengerController {
 
         try{
             passengerService.deleteById(id);
+
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<PassengerElasticDocument>> getByElasticSearch(@RequestParam String query){
+
+        List<PassengerElasticDocument> documents= passengerService.findByElasticSearch(query);
+        return ResponseEntity.ok(documents);
     }
 
 
