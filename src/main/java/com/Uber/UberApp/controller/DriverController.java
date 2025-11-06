@@ -2,6 +2,8 @@ package com.Uber.UberApp.controller;
 
 import com.Uber.UberApp.dto.DriverRequest;
 import com.Uber.UberApp.dto.DriverResponse;
+import com.Uber.UberApp.model.DriverElasticDocument;
+import com.Uber.UberApp.model.PassengerElasticDocument;
 import com.Uber.UberApp.service.DriverService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +78,13 @@ public class DriverController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<DriverElasticDocument>> getByElasticSearch(@RequestParam String query){
+
+        List<DriverElasticDocument> documents= driverService.findByElasticSearch(query);
+        return ResponseEntity.ok(documents);
     }
 
 

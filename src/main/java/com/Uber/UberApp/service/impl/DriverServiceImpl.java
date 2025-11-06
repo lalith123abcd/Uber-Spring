@@ -4,8 +4,12 @@ import com.Uber.UberApp.dto.DriverRequest;
 import com.Uber.UberApp.dto.DriverResponse;
 import com.Uber.UberApp.mapper.DriverMapper;
 import com.Uber.UberApp.model.Driver;
+import com.Uber.UberApp.model.DriverElasticDocument;
+import com.Uber.UberApp.model.PassengerElasticDocument;
+import com.Uber.UberApp.repository.DriverDocumentRepository;
 import com.Uber.UberApp.repository.DriverRepository;
 import com.Uber.UberApp.service.DriverService;
+import com.Uber.UberApp.service.IDriverIndexService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +23,8 @@ import java.util.stream.Collectors;
 public class DriverServiceImpl implements DriverService {
 
     private final DriverRepository driverRepository;
+    private final IDriverIndexService driverIndexService;
+    private final DriverDocumentRepository driverDocumentRepository;
     @Override
     @Transactional(readOnly = true)
     public Optional<DriverResponse> findById(Long id) {
@@ -64,7 +70,17 @@ public class DriverServiceImpl implements DriverService {
         }
         Driver driver=DriverMapper.toEntity(request);
         Driver savedDriver=driverRepository.save(driver);
+        driverIndexService.createDriverIndex(driver);
         return DriverMapper.toResponse(savedDriver);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DriverElasticDocument> findByElasticSearch(String query) {
+
+        return driverDocumentRepository.findByNameContainingOrEmailContainingOrLicenseNumberContaining(query,query,query
+        );
+
     }
 
     @Override
