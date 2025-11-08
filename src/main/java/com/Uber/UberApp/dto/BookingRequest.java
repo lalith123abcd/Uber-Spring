@@ -23,10 +23,10 @@ public class BookingRequest {
     private Long driverId;
 
     @NotBlank(message = "Pickup location is required")
-    private String pickupLocation;
+    private String pickUpLocation;
 
     @NotBlank(message = "Dropoff location is required")
-    private String dropoffLocation;
+    private String dropOffLocation;
 
     @NotNull(message = "Fare is required")
     @Positive(message = "Fare must be positive")

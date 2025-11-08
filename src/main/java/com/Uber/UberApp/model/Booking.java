@@ -22,35 +22,37 @@ public class Booking {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "passenger_id",nullable = false)
+    @JoinColumn(name = "passenger_id", nullable = false)
     private Passenger passenger;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "driver_id",nullable = false)
+    @JoinColumn(name = "driver_id")
     private Driver driver;
 
     @Column(nullable = false)
     private String pickUpLocation;
-    @Column(nullable = false)
+
+    @Column(name = "drop_off_location", nullable = false)
     private String dropOffLocation;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private BookingStatus status = BookingStatus.PENDING;
 
     @Column(nullable = false)
     private BigDecimal fare;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    private LocalDateTime scheduledPickUpTime;
+    private LocalDateTime scheduledPickupTime;
 
-    private LocalDateTime actualPickUpTime;
+    private LocalDateTime actualPickupTime;
 
     private LocalDateTime completedAt;
-
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    @Column(nullable = false)
-    private BookingStatus status=BookingStatus.PENDING;
 
     @PrePersist
     protected void onCreate() {
@@ -63,15 +65,12 @@ public class Booking {
         updatedAt = LocalDateTime.now();
     }
 
-
-
-    public enum BookingStatus{
+    public enum BookingStatus {
         PENDING,
         CONFIRMED,
         IN_PROGRESS,
         COMPLETED,
         CANCELLED
     }
-
 
 }
