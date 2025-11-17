@@ -22,13 +22,16 @@ public class BookingRequest {
 
     private Long driverId;
 
-    @NotBlank(message = "Pickup location is required")
-    private String pickUpLocation;
+    @NotBlank(message = "Pickup location lat is required")
+    private Double pickUpLocationLatitude;
 
-    @NotBlank(message = "Dropoff location is required")
+    @NotBlank(message = "Pickup location long is required")
+    private Double pickUpLocationLongitude;
+
+
     private String dropOffLocation;
 
-    @NotNull(message = "Fare is required")
+
     @Positive(message = "Fare must be positive")
     private BigDecimal fare;
 

@@ -30,9 +30,13 @@ public class Booking {
     private Driver driver;
 
     @Column(nullable = false)
-    private String pickUpLocation;
+    private Double pickUpLocationLatitude;
 
-    @Column(name = "drop_off_location", nullable = false)
+    @Column(nullable = false)
+    private Double pickUpLocationLongitude;
+
+
+    @Column(name = "drop_off_location")
     private String dropOffLocation;
 
     @Enumerated(EnumType.STRING)
